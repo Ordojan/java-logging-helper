@@ -1,27 +1,38 @@
 import javaLoggingHelper.config as config
-import logging, os, settings, sys, shutil
+import logging, os, settings, sys, shutil, javaParser.
 
 logger = logging.getLogger(settings.LOGGER_NAME)
 
 def main():
     applicationStart()
     
+    f = open(settings.TEST_DATA_DIR + '/' + settings.TEST_DATA_FILENAME)
     
     applicationEnd()
     
 def applicationStart():
     config.configureLogging()
+    logger.info('------------------------------------------------------')
+    logger.info('Application started.')
     
     if not os.path.exists(settings.TEST_DATA_DIR):
         logger.critical("Test data directory could not be found. Application terminated.")
         sys.exit()
         
-    if not os.path.exists(settings.TEST_DATA_BACKUP_DIR):
-        shutil.copytree(settings.TEST_DATA_DIR, settings.TEST_DATA_BACKUP_DIR)
+    if os.path.exists(settings.TEST_DATA_BACKUP_DIR):
+        logger.info("Test data backup directory already exists. Deleting directory.")
+        shutil.rmtree(settings.TEST_DATA_BACKUP_DIR)
     
+    logger.info("Copying test data from {0} to {1}".format(os.path.abspath(settings.TEST_DATA_DIR), os.path.abspath(settings.TEST_DATA_BACKUP_DIR)))
+    shutil.copytree(settings.TEST_DATA_DIR, settings.TEST_DATA_BACKUP_DIR)
     
 def applicationEnd():
-    logger.info('Application end.')
+    if os.path.exists(settings.TEST_DATA_BACKUP_DIR):
+        logger.info("Deleting test data backup directory.")
+        shutil.rmtree(settings.TEST_DATA_BACKUP_DIR)
+        
+    logger.info('Application ended.')
+    logger.info('------------------------------------------------------')
     
     
     
