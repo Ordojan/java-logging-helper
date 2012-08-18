@@ -1,5 +1,6 @@
 import javaLoggingHelper.config as config
-import logging, os, settings, sys, shutil, javaParser.
+import logging, os, settings, sys, shutil
+from javaLoggingHelper.parsing import javaParser
 
 logger = logging.getLogger(settings.LOGGER_NAME)
 
@@ -7,6 +8,7 @@ def main():
     applicationStart()
     
     f = open(settings.TEST_DATA_DIR + '/' + settings.TEST_DATA_FILENAME)
+    javaParser.findDefinitions(f)
     
     applicationEnd()
     
