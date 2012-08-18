@@ -10,7 +10,7 @@ def configureLogging():
     consoleHandler.setLevel(logging.DEBUG)
 
     # create console RotatingFileHandler and set level to debug
-    logFilePath = './app.log'
+    logFilePath = settings.LOG_FILE_DIR
     
     fileHandler = logging.FileHandler(logFilePath)
     fileHandler.setLevel(logging.DEBUG)

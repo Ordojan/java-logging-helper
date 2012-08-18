@@ -6,4 +6,6 @@ TEST_DATA_DIR = './testData'
 TEST_DATA_BACKUP_DIR = TEST_DATA_DIR + '/backups'
 TEST_DATA_FILENAME = 'Test.java'
 
+LOG_FILE_DIR = './app.log'
+
 LOGGER_NAME = 'JavaLoggingHelper'

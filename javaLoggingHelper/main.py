@@ -9,12 +9,14 @@ def main():
     
     f = open(settings.TEST_DATA_DIR + '/' + settings.TEST_DATA_FILENAME)
     javaParser.findDefinitions(f)
+    f.close()
     
     applicationEnd()
     
 def applicationStart():
     config.configureLogging()
-    logger.info('------------------------------------------------------')
+    clearLog()
+    
     logger.info('Application started.')
     
     if not os.path.exists(settings.TEST_DATA_DIR):
@@ -34,7 +36,8 @@ def applicationEnd():
         shutil.rmtree(settings.TEST_DATA_BACKUP_DIR)
         
     logger.info('Application ended.')
-    logger.info('------------------------------------------------------')
     
-    
-    
+def clearLog():
+    f = open(settings.LOG_FILE_DIR, 'w')
+    f.write('')
+    f.close()
