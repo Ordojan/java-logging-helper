@@ -12,8 +12,9 @@ def main():
     parsingResult = javaParser.parseFile(f)
     f.close()
     
-    f = open(settings.TEST_DATA_DIR + '/' + settings.TEST_DATA_FILENAME, 'w')
-    javaWriter.writeLoggingMessages(parsingResult)
+    f = open(settings.TEST_DATA_DIR + '/' + settings.TEST_DATA_FILENAME, 'r+')
+    javaWriter.writeLoggingMessages(f, parsingResult)
+    f.flush()
     f.close()
     
     applicationEnd()

@@ -6,7 +6,9 @@ class Test {
 	private List<String> stringList;
 	
 	public Test(String str, int i) {
+tracer.entering(Test.class.getSimpleName(), "Test", new Object[]{str, i});
 		stringList = new ArrayList<String>();
+tracer.exiting(Test.class.getSimpleName(), "Test");
 	}
 	
 	Test(int i) {
