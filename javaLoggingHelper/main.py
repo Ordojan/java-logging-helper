@@ -8,7 +8,7 @@ def main():
     applicationStart()
     
     f = open(settings.TEST_DATA_DIR + '/' + settings.TEST_DATA_FILENAME)
-    parsingResult = javaParser.findDefinitions(f)
+    parsingResult = javaParser.parseFile(f)
     print parsingResult
     f.close()
     
