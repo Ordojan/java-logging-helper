@@ -1,4 +1,4 @@
-import logging, settings, re, os
+import logging, settings, re
 
 _logger = logging.getLogger(settings.LOGGER_NAME) 
 
@@ -91,7 +91,7 @@ class File(object):
             return None
     
     def setCurrentFileLineLocation(self, lineNumber):
-        self.lineIndex = lineNumber - 1 
+        self.lineIndex = lineNumber
     
     def moveToNextLine(self):
         self.lineIndex = self.lineIndex + 1
@@ -217,8 +217,6 @@ def _findEndOfDefinition(fileToParse, definition):
                 definition.returnStatements.append(returnStatement)
                         
         if len(curlyBraceStack) is 0:
-            _logger.info('Exiting _findEndOfOperation')
-            
             definition.endLineNumber = fileLine.lineNumber
             break
         
@@ -226,6 +224,8 @@ def _findEndOfDefinition(fileToParse, definition):
         
     if isinstance(definition, ClassDefinition):
         fileToParse.setCurrentFileLineLocation(startingLineNumber)
+    
+    _logger.info('Exiting _findEndOfOperation {0}'.format(definition))
         
 def _searchForReturnStatement(fileLine):
     returnStatement = 'return'

@@ -1,15 +1,19 @@
 import javaLoggingHelper.config as config
 import logging, os, settings, sys, shutil
 from javaLoggingHelper.parsing import javaParser
+from javaLoggingHelper.writing import javaWriter
 
 _logger = logging.getLogger(settings.LOGGER_NAME)
 
 def main():
     applicationStart()
     
-    f = open(settings.TEST_DATA_DIR + '/' + settings.TEST_DATA_FILENAME)
+    f = open(settings.TEST_DATA_DIR + '/' + settings.TEST_DATA_FILENAME, 'r')
     parsingResult = javaParser.parseFile(f)
-    print parsingResult
+    f.close()
+    
+    f = open(settings.TEST_DATA_DIR + '/' + settings.TEST_DATA_FILENAME, 'w')
+    javaWriter.writeLoggingMessages(parsingResult)
     f.close()
     
     applicationEnd()
@@ -32,9 +36,6 @@ def applicationStart():
     shutil.copytree(settings.TEST_DATA_DIR, settings.TEST_DATA_BACKUP_DIR)
     
 def applicationEnd():
-    if os.path.exists(settings.TEST_DATA_BACKUP_DIR):
-        _logger.info("Deleting test data backup directory.")
-        shutil.rmtree(settings.TEST_DATA_BACKUP_DIR)
         
     _logger.info('Application ended.')
     
