@@ -5,7 +5,7 @@ class Test {
 	private String word;
 	private List<String> stringList;
 	
-	public Test() {
+	public Test(String str, int i) {
 		stringList = new ArrayList<String>();
 	}
 	
