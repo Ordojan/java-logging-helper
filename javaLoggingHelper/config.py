@@ -2,7 +2,7 @@ import logging
 import settings
 
 def configureLogging():
-    # setting the level to debug for the root logger
+    # setting the level to debug for the root _logger
     logging.getLogger(settings.LOGGER_NAME).setLevel(logging.DEBUG)
     
     # create console handler and set level to warning
@@ -23,8 +23,8 @@ def configureLogging():
     consoleHandler.setFormatter(consoleFormatter)
     fileHandler.setFormatter(fileFormatter)
     
-    # add handlers to root logger
-    logger = logging.getLogger(settings.LOGGER_NAME)
-    logger.addHandler(fileHandler)
-    logger.addHandler(consoleHandler)
+    # add handlers to root _logger
+    _logger = logging.getLogger(settings.LOGGER_NAME)
+    _logger.addHandler(fileHandler)
+    _logger.addHandler(consoleHandler)
         
