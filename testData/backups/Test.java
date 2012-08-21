@@ -1,4 +1,4 @@
-import java.util.*;
+ import java.util.*;
 
 class Test {
 	private int number;
@@ -9,9 +9,6 @@ class Test {
 		stringList = new ArrayList<String>();
 	}
 	
-	Test(int i) {
-		stringList = new ArrayList<String>();
-	}
 	
 	public int getNumber() {
 		return number;

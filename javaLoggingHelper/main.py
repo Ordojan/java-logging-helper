@@ -14,7 +14,6 @@ def main():
     
     f = open(settings.TEST_DATA_DIR + '/' + settings.TEST_DATA_FILENAME, 'r+')
     javaWriter.writeLoggingMessages(f, parsingResult)
-    f.flush()
     f.close()
     
     applicationEnd()
@@ -29,12 +28,12 @@ def applicationStart():
         _logger.critical("Test data directory could not be found. Application terminated.")
         sys.exit()
         
-    if os.path.exists(settings.TEST_DATA_BACKUP_DIR):
-        _logger.info("Test data backup directory already exists. Deleting directory.")
-        shutil.rmtree(settings.TEST_DATA_BACKUP_DIR)
-    
-    _logger.info("Copying test data from {0} to {1}".format(os.path.abspath(settings.TEST_DATA_DIR), os.path.abspath(settings.TEST_DATA_BACKUP_DIR)))
-    shutil.copytree(settings.TEST_DATA_DIR, settings.TEST_DATA_BACKUP_DIR)
+#    if os.path.exists(settings.TEST_DATA_BACKUP_DIR):
+#        _logger.info("Test data backup directory already exists. Deleting directory.")
+#        shutil.rmtree(settings.TEST_DATA_BACKUP_DIR)
+#    
+#    _logger.info("Copying test data from {0} to {1}".format(os.path.abspath(settings.TEST_DATA_DIR), os.path.abspath(settings.TEST_DATA_BACKUP_DIR)))
+#    shutil.copytree(settings.TEST_DATA_DIR, settings.TEST_DATA_BACKUP_DIR)
     
 def applicationEnd():
         

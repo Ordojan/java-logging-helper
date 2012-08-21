@@ -58,30 +58,77 @@ class ExitingLogMessage(LogMessage):
             
     def __repr__(self):
         return 'ExitingLogMessage(loggerVariableName = {0}, className = {1}, operationName = {2}, parameter = {3})'.format(self.loggerVariableName, self.className, self.operationName, self.parameter)
+
+class LineOffset(object):
+    def __init__(self):
+        self.value = 0
     
+    def incrementLineOffset(self):
+        self.value = (self.value + 1)
+    
+    def decrementLineOffset(self):
+        self.value = (self.value - 1)
+        
+    def __repr__(self):
+        return 'LineOffset(value = {0})'.format(self.value)
+        
 def writeLoggingMessages(fileToWriteTo, javaParsingResult):
     _logger.info('Entering writeLoggingMessages {0}'.format(javaParsingResult))
     
+    lineOffset = LineOffset()
+    
     fileContents = fileToWriteTo.readlines()
+    className = javaParsingResult.classDefinition.name
     
     if javaParsingResult.constructorDefinitions:
         for definition in javaParsingResult.constructorDefinitions:
-            className = javaParsingResult.classDefinition.name
-            operationName = definition.name
+            _writeLoggingMessageToConstructorDefinition(fileContents, className, definition, lineOffset)
+        for definition in javaParsingResult.methodDefinitions:
+            _writeLoggingMessageToMethodDefinition(fileContents, className, definition, lineOffset)
             
-            parameterValues = []
-            for param in definition.parameters:
-                parameterValues.append(param.value)
-                
-            enteringLogMessage = EnteringLogMessage('tracer', className, operationName, parameterValues)
-            
-            fileContents.insert(definition.lineNumber, enteringLogMessage.getLoggingStatement())
-            
-            exitingLogMessage = ExitingLogMessage('tracer', className, operationName, [])
-            
-            fileContents.insert(definition.endLineNumber, exitingLogMessage.getLoggingStatement())
-    
     fileToWriteTo.seek(0)
     fileToWriteTo.writelines(fileContents)
     
     _logger.info('Exiting writeLoggingMessages {0}'.format(javaParsingResult))
+
+def _writeLoggingMessageToConstructorDefinition(fileContents, className, constructorDefinition, lineOffset):
+    operationName = constructorDefinition.name
+    
+    parameterValues = []
+    for param in constructorDefinition.parameters:
+        parameterValues.append(param.value)
+        
+    enteringLogMessage = EnteringLogMessage('tracer', className, operationName, parameterValues)
+    fileContents.insert((constructorDefinition.lineNumber + lineOffset.value), enteringLogMessage.getLoggingStatement())
+    lineOffset.incrementLineOffset()
+    
+    exitingLogMessage = ExitingLogMessage('tracer', className, operationName, [])
+    lineNumber = constructorDefinition.endLineNumber + (lineOffset.value - 1)
+    fileContents.insert(lineNumber, exitingLogMessage.getLoggingStatement())
+    lineOffset.incrementLineOffset()
+    
+def _writeLoggingMessageToMethodDefinition(fileContents, className, methodDefinition, lineOffset):
+    operationName = methodDefinition.name
+    
+    parameterValues = []
+    for param in methodDefinition.parameters:
+        parameterValues.append(param.value)
+        
+    enteringLogMessage = EnteringLogMessage('tracer', className, operationName, parameterValues)
+    fileContents.insert((methodDefinition.lineNumber + lineOffset.value), enteringLogMessage.getLoggingStatement())
+    lineOffset.incrementLineOffset()
+    
+    if len(methodDefinition.returnStatements) is 0:
+        exitingLogMessage = ExitingLogMessage('tracer', className, operationName, [])
+        lineNumber = methodDefinition.endLineNumber + (lineOffset.value - 1)
+        fileContents.insert(lineNumber, exitingLogMessage.getLoggingStatement())
+        lineOffset.incrementLineOffset()
+    else:
+        for returnStatement in methodDefinition.returnStatements:
+            returnValue = returnStatement.value
+    
+            exitingLogMessage = ExitingLogMessage('tracer', className, operationName, returnValue)
+            lineNumber = returnStatement.lineNumber + (lineOffset.value - 1)
+            fileContents.insert(lineNumber, exitingLogMessage.getLoggingStatement())
+            lineOffset.incrementLineOffset()
+    
