@@ -2,7 +2,6 @@ import logging, settings
 
 _logger = logging.getLogger(settings.LOGGER_NAME)
 
-
 def enum(**enums):  
     return type('Enum', (), enums)
 
@@ -18,10 +17,10 @@ class LogMessage(object):
 class LoggerVariableDeclaration(LogMessage):
     def __init__(self, loggerVariableName):
         super(LoggerVariableDeclaration, self).__init__(loggerVariableName)
-        self.javaLoggerClass = JAVA_LOGGER_CLASS
+        self.javaLoggerClass = settings.JAVA_LOGGER_CLASS
         
     def getLoggerDeclaration(self):
-        output = "private static " + self.javaLoggerClass + " " + self.loggerVariableName + " = " + self.javaLoggerClass + ".getLogger(Config.GLOBAL_LOGGER_NAME);"
+        return "private static " + self.javaLoggerClass + " " + self.loggerVariableName + " = " + self.javaLoggerClass + ".getLogger(Config.GLOBAL_LOGGER_NAME);\n"
 
 class EnteringLogMessage(LogMessage):
     def __init__(self, loggerVariableName, className, methodName, parameters):
@@ -91,6 +90,7 @@ def writeLoggingMessages(fileToWriteTo, javaParsingResult):
     if javaParsingResult.classDefinition:
         # insert logger variable declaration
         _writeJavaLoggerDeclarationToClassDefinition(fileContents, javaParsingResult.classDefinition, lineOffset)
+        
         if javaParsingResult.constructorDefinitions:
             for definition in javaParsingResult.constructorDefinitions:
                 _writeLoggingMessageToConstructorDefinition(fileContents, className, definition, lineOffset)
@@ -145,9 +145,11 @@ def _writeLoggingMessageToMethodDefinition(fileContents, className, methodDefini
             lineOffset.incrementLineOffset()
     
 def _writeJavaLoggerDeclarationToClassDefinition(fileContents, definition, lineOffset):
-    javaLoggerDeclaration = LoggerVariableDeclaration(LOGGER_VARIABLE_NAME)
+    javaLoggerDeclaration = LoggerVariableDeclaration(settings.LOGGER_VARIABLE_NAME)
     lineNumber = definition.lineNumber + 1
     
-    fileContents.insert(lineNumber, javaLoggerDeclaration)
-    
+    fileContents.insert(lineNumber, javaLoggerDeclaration.getLoggerDeclaration())
     lineOffset.incrementLineOffset()
+    
+    
+    
