@@ -78,9 +78,9 @@ class File(object):
         
         textFileLines = file_.readlines()
 
-        for line in textFileLines:
-            lineNumber = textFileLines.index(line) + 1
-            fileLine = FileLine(line, lineNumber)
+        for index in range(len(textFileLines)):
+            lineNumber = index + 1
+            fileLine = FileLine(textFileLines[index], lineNumber)
         
             self.fileLines.append(fileLine)
             
@@ -160,7 +160,7 @@ def _searchForOperationDefinition(fileToParse):
     
     fileLine = fileToParse.getCurrentFileLine()
     
-    match = re.search(r'(\w+)\W(\w+)\((.*)\)', fileLine.text)
+    match = re.search(r'(\w+)\s(\w+)\((.*)\)', fileLine.text)
     output = None
     
     if not match:
