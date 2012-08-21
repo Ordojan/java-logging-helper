@@ -15,6 +15,14 @@ class LogMessage(object):
     def __repr__(self):
         return 'LogMessage(loggerVariableName = {0})'.format(self.loggerVariableName)
 
+class LoggerVariableDeclaration(LogMessage):
+    def __init__(self, loggerVariableName):
+        super(LoggerVariableDeclaration, self).__init__(loggerVariableName)
+        self.javaLoggerClass = JAVA_LOGGER_CLASS
+        
+    def getLoggerDeclaration(self):
+        output = "private static " + self.javaLoggerClass + " " + self.loggerVariableName + " = " + self.javaLoggerClass + ".getLogger(Config.GLOBAL_LOGGER_NAME);"
+
 class EnteringLogMessage(LogMessage):
     def __init__(self, loggerVariableName, className, methodName, parameters):
         super(EnteringLogMessage, self).__init__(loggerVariableName)
@@ -80,11 +88,15 @@ def writeLoggingMessages(fileToWriteTo, javaParsingResult):
     fileContents = fileToWriteTo.readlines()
     className = javaParsingResult.classDefinition.name
     
-    if javaParsingResult.constructorDefinitions:
-        for definition in javaParsingResult.constructorDefinitions:
-            _writeLoggingMessageToConstructorDefinition(fileContents, className, definition, lineOffset)
-        for definition in javaParsingResult.methodDefinitions:
-            _writeLoggingMessageToMethodDefinition(fileContents, className, definition, lineOffset)
+    if javaParsingResult.classDefinition:
+        # insert logger variable declaration
+        _writeJavaLoggerDeclarationToClassDefinition(fileContents, javaParsingResult.classDefinition, lineOffset)
+        if javaParsingResult.constructorDefinitions:
+            for definition in javaParsingResult.constructorDefinitions:
+                _writeLoggingMessageToConstructorDefinition(fileContents, className, definition, lineOffset)
+        if javaParsingResult.methodDefinitions:
+            for definition in javaParsingResult.methodDefinitions:
+                _writeLoggingMessageToMethodDefinition(fileContents, className, definition, lineOffset)
             
     fileToWriteTo.seek(0)
     fileToWriteTo.writelines(fileContents)
@@ -132,3 +144,10 @@ def _writeLoggingMessageToMethodDefinition(fileContents, className, methodDefini
             fileContents.insert(lineNumber, exitingLogMessage.getLoggingStatement())
             lineOffset.incrementLineOffset()
     
+def _writeJavaLoggerDeclarationToClassDefinition(fileContents, definition, lineOffset):
+    javaLoggerDeclaration = LoggerVariableDeclaration(LOGGER_VARIABLE_NAME)
+    lineNumber = definition.lineNumber + 1
+    
+    fileContents.insert(lineNumber, javaLoggerDeclaration)
+    
+    lineOffset.incrementLineOffset()
