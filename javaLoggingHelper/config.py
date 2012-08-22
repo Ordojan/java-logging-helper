@@ -1,6 +1,10 @@
 import logging
 import settings
 
+def clearLog():
+    f = open(settings.LOG_FILE_DIR, 'w')
+    f.close()
+    
 def configureLogging():
     # setting the level to debug for the root _logger
     logging.getLogger(settings.LOGGER_NAME).setLevel(logging.DEBUG)

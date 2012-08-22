@@ -146,10 +146,6 @@ def _writeLoggingMessageToMethodDefinition(fileContents, className, methodDefini
     
 def _writeJavaLoggerDeclarationToClassDefinition(fileContents, definition, lineOffset):
     javaLoggerDeclaration = LoggerVariableDeclaration(settings.LOGGER_VARIABLE_NAME)
-    lineNumber = definition.lineNumber + 1
-    
-    fileContents.insert(lineNumber, javaLoggerDeclaration.getLoggerDeclaration())
+
+    fileContents.insert(definition.lineNumber, javaLoggerDeclaration.getLoggerDeclaration())
     lineOffset.incrementLineOffset()
-    
-    
-    

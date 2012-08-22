@@ -1,4 +1,5 @@
 import logging, settings, re
+from compiler.ast import Assert
 
 _logger = logging.getLogger(settings.LOGGER_NAME) 
 
@@ -65,7 +66,8 @@ class FileLine(object):
     def __init__(self, text, lineNumber):
         self.text = text
         self.lineNumber = lineNumber
-       
+        self.indentation = 0
+        
     def __repr__(self):
         text = self.text.strip('\n')
         return 'FileLine(text = {0}, lineNumber = {1})'.format(text, self.lineNumber)          
@@ -81,7 +83,11 @@ class File(object):
         for index in range(len(textFileLines)):
             lineNumber = index + 1
             fileLine = FileLine(textFileLines[index], lineNumber)
-        
+            
+            originalLength = len(textFileLines[index])
+            indentation = originalLength - len(textFileLines[index].lstrip())
+            fileLine.indentation = indentation
+            
             self.fileLines.append(fileLine)
             
     def getCurrentFileLine(self):
@@ -159,8 +165,7 @@ def _searchForOperationDefinition(fileToParse):
     _logger.info('Entering _searchForOperationDefinition {0}'.format(fileToParse))
     
     fileLine = fileToParse.getCurrentFileLine()
-    
-    match = re.search(r'(\w+)\s(\w+)\((.*)\)', fileLine.text)
+    match = re.search(r'(\w*\<\w*\S\s*\w+\>|\w+)\s+(\w+)\((.*)\) ', fileLine.text)
     output = None
     
     if not match:
@@ -208,7 +213,7 @@ def _findEndOfDefinition(fileToParse, definition):
         
         if openBrace in fileLine.text:
             curlyBraceStack.append(openBrace)
-        elif closeBrace in fileLine.text:
+        if closeBrace in fileLine.text:
             curlyBraceStack.pop()
             
         if isinstance(definition, MethodDefinition):
