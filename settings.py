@@ -10,7 +10,8 @@ LOG_FILE_DIR = './app.log'
 
 LOGGER_NAME = 'JavaLoggingHelper'
 
-LOGGER_VARIABLE_NAME = 'tracer'
+JAVA_LOGGER_VARIABLE_NAME = 'tracer'
+JAVA_LOGGER_NAME = 'Config.GLOBAL_LOGGER_NAME'
 JAVA_LOGGER_CLASS = 'java.util.logging.Logger'
 
 INDENT = '    '
