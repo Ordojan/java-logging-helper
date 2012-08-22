@@ -58,6 +58,7 @@ public class Tag extends UCMEntity {
 	@Override
 	public void initialize() {
         tracer.entering(Tag.class.getSimpleName(), "initialize");
+
 		Matcher match = pattern_tag_fqname.matcher( fqname );
 		if( match.find() ) {
 			shortname = match.group( 1 ); // This is also the eid
@@ -65,11 +66,13 @@ public class Tag extends UCMEntity {
 		}
 
 		this.OID = this.shortname;
+
         tracer.exiting(Tag.class.getSimpleName(), "initialize");
 	}
 
 	public static Map<String, String> CGIToHash( String cgi ) {
         tracer.entering(Tag.class.getSimpleName(), "CGIToHash", new Object[]{cgi});
+
 		HashMap<String, String> hash = new HashMap<String, String>();
 		logger.debug( "cgi=" + cgi );
 
@@ -82,12 +85,15 @@ public class Tag extends UCMEntity {
 			hash.put( entry[0].trim(), entry[1].trim() );
 		}
 
-        tracer.exiting(Tag.class.getSimpleName(), "CGIToHash", hash);
-		return hash;
+        Map<String, String> _output_ = hash;
+
+        tracer.exiting(Tag.class.getSimpleName(), "CGIToHash", _output_);
+        return _output_;
 	}
 
 	public boolean queryTag( TagQuery query ) {
         tracer.entering(Tag.class.getSimpleName(), "queryTag", new Object[]{query});
+
 		for( Tuple<String, String> t : query ) {
 			if( this.keyval.containsKey( t.t1 ) ) {
 				logger.debug( "(" + t.t1 + ", " + t.t2 + ") = " + this.keyval.get( t.t1 ) );
@@ -97,36 +103,48 @@ public class Tag extends UCMEntity {
 
 				// if( !this.keyval.get( t.t1 ).matches( t.t2 ) )
 				if( !match.find() ) {
-                    tracer.exiting(Tag.class.getSimpleName(), "queryTag", false);
-					return false;
+                    boolean _output_ = false;
+
+                    tracer.exiting(Tag.class.getSimpleName(), "queryTag", _output_);
+                    return _output_;
 				}
 			} else {
 				logger.debug( "(" + t.t1 + ", " + t.t2 + ") = " );
 
 				/*
 				 * Handling non-existing keys, if the condition can't fall back
-                    tracer.exiting(Tag.class.getSimpleName(), "queryTag", false);
-				 * to an empty string, return false
+                    boolean _output_ = false;
+
+                    tracer.exiting(Tag.class.getSimpleName(), "queryTag", _output_);
+                    return _output_;
 				 */
 				if( !"".matches( t.t2 ) ) {
-                    tracer.exiting(Tag.class.getSimpleName(), "queryTag", false);
-					return false;
+                    boolean _output_ = false;
+
+                    tracer.exiting(Tag.class.getSimpleName(), "queryTag", _output_);
+                    return _output_;
 				}
 			}
 		}
 
-        tracer.exiting(Tag.class.getSimpleName(), "queryTag", true);
-		return true;
+        boolean _output_ = true;
+
+        tracer.exiting(Tag.class.getSimpleName(), "queryTag", _output_);
+        return _output_;
 	}
 
 	public static String mapToCGI( Map<String, String> keyval ) {
         tracer.entering(Tag.class.getSimpleName(), "mapToCGI", new Object[]{String>});
-        tracer.exiting(Tag.class.getSimpleName(), "mapToCGI", mapToCGI( keyval, false ));
-		return mapToCGI( keyval, false );
+
+        String _output_ = mapToCGI( keyval, false );
+
+        tracer.exiting(Tag.class.getSimpleName(), "mapToCGI", _output_);
+        return _output_;
 	}
 
 	public static String mapToCGI( Map<String, String> keyval, boolean skiptaginfo ) {
         tracer.entering(Tag.class.getSimpleName(), "mapToCGI", new Object[]{String>, boolean});
+
 		StringBuffer sb = new StringBuffer();
 		Iterator<Entry<String, String>> it = keyval.entrySet().iterator();
 		int c = 0;
@@ -141,8 +159,10 @@ public class Tag extends UCMEntity {
 			sb.deleteCharAt( sb.length() - 1 );
 		}
 
-        tracer.exiting(Tag.class.getSimpleName(), "mapToCGI", sb.toString());
-		return sb.toString();
+        String _output_ = sb.toString();
+
+        tracer.exiting(Tag.class.getSimpleName(), "mapToCGI", _output_);
+        return _output_;
 	}
 
 	/**
@@ -152,6 +172,7 @@ public class Tag extends UCMEntity {
 	 */
 	public Tag load() {
         tracer.entering(Tag.class.getSimpleName(), "load");
+
 		// TODO This method was not implemented????
 		//Tuple<String, String> t = context.getTag( this );
 		// this.OID = t.t1;
@@ -164,68 +185,92 @@ public class Tag extends UCMEntity {
 
 		this.loaded = true;
 
-        tracer.exiting(Tag.class.getSimpleName(), "load", this);
-		return this;
+        Tag _output_ = this;
+
+        tracer.exiting(Tag.class.getSimpleName(), "load", _output_);
+        return _output_;
 	}
 
 	public void setKeyValue( String cgi ) {
         tracer.entering(Tag.class.getSimpleName(), "setKeyValue", new Object[]{cgi});
+
 		keyval = Tag.CGIToHash( cgi );
 		this.tagType = ( keyval.containsKey( "tagtype" ) ? keyval.get( "tagtype" ) : "" );
 		this.tagID = ( keyval.containsKey( "tagid" ) ? keyval.get( "tagid" ) : "" );
 
 		this.loaded = true;
+
         tracer.exiting(Tag.class.getSimpleName(), "setKeyValue");
 	}
 
 	public void setEntry( String key, String value ) {
         tracer.entering(Tag.class.getSimpleName(), "setEntry", new Object[]{key, value});
+
 		logger.debug( "Setting " + key + " = " + value );
 		keyval.put( key, value );
+
         tracer.exiting(Tag.class.getSimpleName(), "setEntry");
 	}
 
 	public boolean removeEntry( String key ) {
         tracer.entering(Tag.class.getSimpleName(), "removeEntry", new Object[]{key});
+
 		if( keyval.containsKey( key ) ) {
 			logger.debug( "Removing " + key );
 			keyval.remove( key );
-            tracer.exiting(Tag.class.getSimpleName(), "removeEntry", true);
-			return true;
+            boolean _output_ = true;
+
+            tracer.exiting(Tag.class.getSimpleName(), "removeEntry", _output_);
+            return _output_;
 		} else {
 			logger.debug( "Could not remove " + key );
-            tracer.exiting(Tag.class.getSimpleName(), "removeEntry", false);
-			return false;
+            boolean _output_ = false;
+
+            tracer.exiting(Tag.class.getSimpleName(), "removeEntry", _output_);
+            return _output_;
 		}
 	}
 
 	public String getEntry( String key ) {
         tracer.entering(Tag.class.getSimpleName(), "getEntry", new Object[]{key});
+
 		if( keyval.containsKey( key ) ) {
-            tracer.exiting(Tag.class.getSimpleName(), "getEntry", keyval.get( key ));
-			return keyval.get( key );
+            String _output_ = keyval.get( key );
+
+            tracer.exiting(Tag.class.getSimpleName(), "getEntry", _output_);
+            return _output_;
 		}
 
-        tracer.exiting(Tag.class.getSimpleName(), "getEntry", null);
-		return null;
+        String _output_ = null;
+
+        tracer.exiting(Tag.class.getSimpleName(), "getEntry", _output_);
+        return _output_;
 	}
 
 	public Map<String, String> GetEntries() {
         tracer.entering(Tag.class.getSimpleName(), "GetEntries");
-        tracer.exiting(Tag.class.getSimpleName(), "GetEntries", this.keyval);
-		return this.keyval;
+
+        Map<String, String> _output_ = this.keyval;
+
+        tracer.exiting(Tag.class.getSimpleName(), "GetEntries", _output_);
+        return _output_;
 	}
 
 	public void setTagEntity( UCMEntity entity ) {
         tracer.entering(Tag.class.getSimpleName(), "setTagEntity", new Object[]{entity});
+
 		this.entity = entity;
+
         tracer.exiting(Tag.class.getSimpleName(), "setTagEntity");
 	}
 
 	public UCMEntity getTagEntity() {
         tracer.entering(Tag.class.getSimpleName(), "getTagEntity");
-        tracer.exiting(Tag.class.getSimpleName(), "getTagEntity", this.entity);
-		return this.entity;
+
+        UCMEntity _output_ = this.entity;
+
+        tracer.exiting(Tag.class.getSimpleName(), "getTagEntity", _output_);
+        return _output_;
 	}
 
 	/**
@@ -241,30 +286,39 @@ public class Tag extends UCMEntity {
 	 */
 	public Tag persist() throws TagException, UnableToCreateEntityException, UnableToLoadEntityException, UCMEntityNotFoundException, UnableToGetEntityException, UnableToInitializeEntityException {
         tracer.entering(Tag.class.getSimpleName(), "persist");
-        tracer.exiting(Tag.class.getSimpleName(), "persist", persist( this ));
-		return persist( this );
+
+        Tag _output_ = persist( this );
+
+        tracer.exiting(Tag.class.getSimpleName(), "persist", _output_);
+        return _output_;
 	}
 
 	public static Tag persist( Tag tag ) throws TagException, UnableToCreateEntityException, UnableToLoadEntityException, UCMEntityNotFoundException, UnableToGetEntityException, UnableToInitializeEntityException {
         tracer.entering(Tag.class.getSimpleName(), "persist", new Object[]{tag});
+
 		/* Make the new tag */
 		Tag newtag = Tag.newTag( tag.getTagType(), tag.getTagID(), tag.getTagEntity(), Tag.mapToCGI( tag.GetEntries(), true ) );
 
 		/* Delete the old tag */
 		delete( tag );
 
-        tracer.exiting(Tag.class.getSimpleName(), "persist", newtag);
-		return newtag;
+        Tag _output_ = newtag;
+
+        tracer.exiting(Tag.class.getSimpleName(), "persist", _output_);
+        return _output_;
 	}
 
 	private static void delete( Tag tag ) {
         tracer.entering(Tag.class.getSimpleName(), "delete", new Object[]{tag});
+
+
 
         tracer.exiting(Tag.class.getSimpleName(), "delete");
 	}
 
 	public static List<Tag> getTags( UCMEntity entity ) throws TagException, UnableToInitializeEntityException {
         tracer.entering(Tag.class.getSimpleName(), "getTags", new Object[]{entity});
+
 		logger.debug( entity );
 
 		String cmd = "describe -ahlink " + __TAG_NAME + " -l " + entity;
@@ -315,12 +369,15 @@ public class Tag extends UCMEntity {
 			}
 		}
 
-        tracer.exiting(Tag.class.getSimpleName(), "getTags", tags);
-		return tags;
+        List<Tag> _output_ = tags;
+
+        tracer.exiting(Tag.class.getSimpleName(), "getTags", _output_);
+        return _output_;
 	}
 
 	private static void deleteTagsWithID( String tagType, String tagID, UCMEntity entity ) throws TagException, UnableToInitializeEntityException {
         tracer.entering(Tag.class.getSimpleName(), "deleteTagsWithID", new Object[]{tagType, tagID, entity});
+
 		logger.debug( tagType + tagID );
 
 		List<Tag> list = getTags( entity );
@@ -340,11 +397,13 @@ public class Tag extends UCMEntity {
 			}
 		}
 
+
         tracer.exiting(Tag.class.getSimpleName(), "deleteTagsWithID");
 	}
 
 	public static Tag getTag( UCMEntity entity, String tagType, String tagID, boolean create ) throws TagException, UnableToInitializeEntityException, UnableToCreateEntityException, UCMEntityNotFoundException, UnableToGetEntityException {
         tracer.entering(Tag.class.getSimpleName(), "getTag", new Object[]{entity, tagType, tagID, create});
+
 		logger.debug( entity.toString() );
 		List<Tag> tags = getTags( entity );
 
@@ -354,24 +413,31 @@ public class Tag extends UCMEntity {
 			if( t.getTagType().equals( tagType ) && t.getTagID().equals( tagID ) ) {
 				logger.debug( "This is it!" );
 				t.setTagEntity( entity );
-                tracer.exiting(Tag.class.getSimpleName(), "getTag", t);
-				return t;
+                Tag _output_ = t;
+
+                tracer.exiting(Tag.class.getSimpleName(), "getTag", _output_);
+                return _output_;
 			}
 		}
 
 		logger.debug( "Could not find the Tag with ID " + tagType + tagID + ". Creating new." );
 
 		if( create ) {
-            tracer.exiting(Tag.class.getSimpleName(), "getTag", newTag( entity, tagType, tagID ));
-			return newTag( entity, tagType, tagID );
+            Tag _output_ = newTag( entity, tagType, tagID );
+
+            tracer.exiting(Tag.class.getSimpleName(), "getTag", _output_);
+            return _output_;
 		} else {
-            tracer.exiting(Tag.class.getSimpleName(), "getTag", null);
-			return null;
+            Tag _output_ = null;
+
+            tracer.exiting(Tag.class.getSimpleName(), "getTag", _output_);
+            return _output_;
 		}
 	}
 
 	private static Tag newTag( UCMEntity entity, String tagType, String tagID ) throws UnableToInitializeEntityException {
         tracer.entering(Tag.class.getSimpleName(), "newTag", new Object[]{entity, tagType, tagID});
+
 		Tag tag = (Tag) UCMEntity.getEntity( Tag.class, "tag@0@" + entity.getPVob().getName() );
 		// tag.SetEntry( "tagtype", tagType );
 		// tag.SetEntry( "tagid", tagID );
@@ -381,12 +447,15 @@ public class Tag extends UCMEntity {
 
 		tag.setCreated( true );
 
-        tracer.exiting(Tag.class.getSimpleName(), "newTag", tag);
-		return tag;
+        Tag _output_ = tag;
+
+        tracer.exiting(Tag.class.getSimpleName(), "newTag", _output_);
+        return _output_;
 	}
 
 	private static Tag newTag( String tagType, String tagID, UCMEntity entity, String cgi ) throws TagException, UnableToCreateEntityException, UCMEntityNotFoundException, UnableToGetEntityException, UnableToInitializeEntityException {
         tracer.entering(Tag.class.getSimpleName(), "newTag", new Object[]{tagType, tagID, entity, cgi});
+
 		logger.debug( "ENTITY=" + entity.toString() );
 		logger.debug( "CGI FOR NEW = " + cgi );
 		// System.out.println( "CGI==="+cgi );
@@ -404,12 +473,15 @@ public class Tag extends UCMEntity {
 		tag.setKeyValue( cgi );
 		tag.setTagEntity( entity );
 
-        tracer.exiting(Tag.class.getSimpleName(), "newTag", tag);
-		return tag;
+        Tag _output_ = tag;
+
+        tracer.exiting(Tag.class.getSimpleName(), "newTag", _output_);
+        return _output_;
 	}
 
 	private static String storeTag( UCMEntity entity, String cgi ) throws TagException {
         tracer.entering(Tag.class.getSimpleName(), "storeTag", new Object[]{entity, cgi});
+
 		logger.debug( entity.getFullyQualifiedName() );
 
 		String cmd = "mkhlink -ttext \"" + cgi + "\" " + __TAG_NAME + " " + entity;
@@ -444,36 +516,50 @@ public class Tag extends UCMEntity {
 			throw new TagException( entity, cgi, __TAG_NAME, Type.CREATION_FAILED );
 		}
 
-        tracer.exiting(Tag.class.getSimpleName(), "storeTag", match.group( 1 ));
-		return match.group( 1 );
+        String _output_ = match.group( 1 );
+
+        tracer.exiting(Tag.class.getSimpleName(), "storeTag", _output_);
+        return _output_;
 	}
 
 	public void setCreated( boolean created ) {
         tracer.entering(Tag.class.getSimpleName(), "setCreated", new Object[]{created});
+
 		this.created = created;
+
         tracer.exiting(Tag.class.getSimpleName(), "setCreated");
 	}
 
 	public boolean isCreated() {
         tracer.entering(Tag.class.getSimpleName(), "isCreated");
-        tracer.exiting(Tag.class.getSimpleName(), "isCreated", this.created);
-		return this.created;
+
+        boolean _output_ = this.created;
+
+        tracer.exiting(Tag.class.getSimpleName(), "isCreated", _output_);
+        return _output_;
 	}
 
 	public String getTagType() {
         tracer.entering(Tag.class.getSimpleName(), "getTagType");
-        tracer.exiting(Tag.class.getSimpleName(), "getTagType", this.tagType);
-		return this.tagType;
+
+        String _output_ = this.tagType;
+
+        tracer.exiting(Tag.class.getSimpleName(), "getTagType", _output_);
+        return _output_;
 	}
 
 	public String getTagID() {
         tracer.entering(Tag.class.getSimpleName(), "getTagID");
-        tracer.exiting(Tag.class.getSimpleName(), "getTagID", this.tagID);
-		return this.tagID;
+
+        String _output_ = this.tagID;
+
+        tracer.exiting(Tag.class.getSimpleName(), "getTagID", _output_);
+        return _output_;
 	}
 
 	public String stringify() {
         tracer.entering(Tag.class.getSimpleName(), "stringify");
+
 		StringBuffer sb = new StringBuffer();
 
 		try {
@@ -501,13 +587,18 @@ public class Tag extends UCMEntity {
 			sb.insert( 0, super.stringify() );
 		}
 
-        tracer.exiting(Tag.class.getSimpleName(), "stringify", sb.toString());
-		return sb.toString();
+        String _output_ = sb.toString();
+
+        tracer.exiting(Tag.class.getSimpleName(), "stringify", _output_);
+        return _output_;
 	}
 
 	public String toString() {
         tracer.entering(Tag.class.getSimpleName(), "toString");
-        tracer.exiting(Tag.class.getSimpleName(), "toString", tagType + "::" + tagID);
-		return tagType + "::" + tagID;
+
+        String _output_ = tagType + "::" + tagID;
+
+        tracer.exiting(Tag.class.getSimpleName(), "toString", _output_);
+        return _output_;
 	}
 }

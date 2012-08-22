@@ -13,5 +13,6 @@ LOGGER_NAME = 'JavaLoggingHelper'
 JAVA_LOGGER_VARIABLE_NAME = 'tracer'
 JAVA_LOGGER_NAME = 'Config.GLOBAL_LOGGER_NAME'
 JAVA_LOGGER_CLASS = 'java.util.logging.Logger'
+JAVA_OUTPUT_VARIABLE_NAME = '_output_'
 
 INDENT = '    '
