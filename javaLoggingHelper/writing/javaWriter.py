@@ -15,12 +15,13 @@ class LogMessage(object):
         return 'LogMessage(loggerVariableName = {0})'.format(self.loggerVariableName)
 
 class LoggerVariableDeclaration(LogMessage):
-    def __init__(self, loggerVariableName):
-        super(LoggerVariableDeclaration, self).__init__(loggerVariableName)
+    def __init__(self):
+        super(LoggerVariableDeclaration, self).__init__(settings.JAVA_LOGGER_VARIABLE_NAME)
         self.javaLoggerClass = settings.JAVA_LOGGER_CLASS
+        self.javaLoggerName = settings.JAVA_LOGGER_NAME
         
     def getLoggerDeclaration(self):
-        return "private static " + self.javaLoggerClass + " " + self.loggerVariableName + " = " + self.javaLoggerClass + ".getLogger(Config.GLOBAL_LOGGER_NAME);\n"
+        return '{0}private static {1} {2} = {3}.getLogger({4});\n'.format(settings.INDENT, self.javaLoggerClass, self.loggerVariableName, self.javaLoggerClass, self.javaLoggerName)
 
 class EnteringLogMessage(LogMessage):
     def __init__(self, loggerVariableName, className, methodName, parameters):
@@ -30,19 +31,17 @@ class EnteringLogMessage(LogMessage):
         self.methodName = methodName
         self.parameters = parameters
     
-    def getLoggingStatement(self):
-        # tracer.entering(ChangeSetElement2.class.getSimpleName(), "getOrigin");
-        # tracer.entering(ChangeSetElement2.class.getSimpleName(), "ChangeSetElement2", new Object[]{file, status});
-        
+    def getLoggingStatement(self, indentationLevel):
+        indentation = indentationLevel * settings.INDENT
         if len(self.parameters) > 0:
             formatedParameters = ''
             for param in self.parameters:
                 formatedParameters = formatedParameters + param + ', '
             formatedParameters = formatedParameters[:len(formatedParameters) - 2]
             
-            return "{0}.{1}({2}.class.getSimpleName(), \"{3}\", new Object[]{{{4}}});\n".format(self.loggerVariableName, self.methodCallName, self.className, self.methodName, formatedParameters)
+            return "{0}{1}.{2}({3}.class.getSimpleName(), \"{4}\", new Object[]{{{5}}});\n".format(indentation, self.loggerVariableName, self.methodCallName, self.className, self.methodName, formatedParameters)
         else:
-            return '{0}.{1}({2}.class.getSimpleName(), "{3}");\n'.format(self.loggerVariableName, self.methodCallName, self.className, self.methodName)
+            return '{0}{1}.{2}({3}.class.getSimpleName(), "{4}");\n'.format(indentation, self.loggerVariableName, self.methodCallName, self.className, self.methodName)
             
     def __repr__(self):
         return 'EnteringLogMessage(loggerVariableName = {0}, className = {1}, methodName = {2}, parameters = {3})'.format(self.loggerVariableName, self.className, self.methodName, self.parameters)
@@ -55,13 +54,13 @@ class ExitingLogMessage(LogMessage):
         self.operationName = operationName
         self.parameter = parameter
     
-    def getLoggingStatement(self):
-        # tracer.exiting(ChangeSetElement2.class.getSimpleName(), "ChangeSetElement2", file);
+    def getLoggingStatement(self, indentationLevel):
+        indentation = indentationLevel * settings.INDENT
         
         if len(self.parameter) > 0:
-            return '{0}.{1}({2}.class.getSimpleName(), "{3}", {4});\n'.format(self.loggerVariableName, self.methodCallName, self.className, self.operationName, self.parameter)
+            return '{0}{1}.{2}({3}.class.getSimpleName(), "{4}", {5});\n'.format(indentation, self.loggerVariableName, self.methodCallName, self.className, self.operationName, self.parameter)
         else:
-            return '{0}.{1}({2}.class.getSimpleName(), "{3}");\n'.format(self.loggerVariableName, self.methodCallName, self.className, self.operationName)
+            return '{0}{1}.{2}({3}.class.getSimpleName(), "{4}");\n'.format(indentation, self.loggerVariableName, self.methodCallName, self.className, self.operationName)
             
     def __repr__(self):
         return 'ExitingLogMessage(loggerVariableName = {0}, className = {1}, operationName = {2}, parameter = {3})'.format(self.loggerVariableName, self.className, self.operationName, self.parameter)
@@ -110,13 +109,13 @@ def _writeLoggingMessageToConstructorDefinition(fileContents, className, constru
     for param in constructorDefinition.parameters:
         parameterValues.append(param.value)
         
-    enteringLogMessage = EnteringLogMessage('tracer', className, operationName, parameterValues)
-    fileContents.insert((constructorDefinition.lineNumber + lineOffset.value), enteringLogMessage.getLoggingStatement())
+    enteringLogMessage = EnteringLogMessage(settings.JAVA_LOGGER_VARIABLE_NAME, className, operationName, parameterValues)
+    fileContents.insert((constructorDefinition.lineNumber + lineOffset.value), enteringLogMessage.getLoggingStatement(constructorDefinition.indentationLevel))
     lineOffset.incrementLineOffset()
     
-    exitingLogMessage = ExitingLogMessage('tracer', className, operationName, [])
+    exitingLogMessage = ExitingLogMessage(settings.JAVA_LOGGER_VARIABLE_NAME, className, operationName, [])
     lineNumber = constructorDefinition.endLineNumber + (lineOffset.value - 1)
-    fileContents.insert(lineNumber, exitingLogMessage.getLoggingStatement())
+    fileContents.insert(lineNumber, exitingLogMessage.getLoggingStatement(constructorDefinition.indentationLevel))
     lineOffset.incrementLineOffset()
     
 def _writeLoggingMessageToMethodDefinition(fileContents, className, methodDefinition, lineOffset):
@@ -126,26 +125,26 @@ def _writeLoggingMessageToMethodDefinition(fileContents, className, methodDefini
     for param in methodDefinition.parameters:
         parameterValues.append(param.value)
         
-    enteringLogMessage = EnteringLogMessage('tracer', className, operationName, parameterValues)
-    fileContents.insert((methodDefinition.lineNumber + lineOffset.value), enteringLogMessage.getLoggingStatement())
+    enteringLogMessage = EnteringLogMessage(settings.JAVA_LOGGER_VARIABLE_NAME, className, operationName, parameterValues)
+    fileContents.insert((methodDefinition.lineNumber + lineOffset.value), enteringLogMessage.getLoggingStatement(methodDefinition.indentationLevel))
     lineOffset.incrementLineOffset()
     
     if len(methodDefinition.returnStatements) is 0:
-        exitingLogMessage = ExitingLogMessage('tracer', className, operationName, [])
+        exitingLogMessage = ExitingLogMessage(settings.JAVA_LOGGER_VARIABLE_NAME, className, operationName, [])
         lineNumber = methodDefinition.endLineNumber + (lineOffset.value - 1)
-        fileContents.insert(lineNumber, exitingLogMessage.getLoggingStatement())
+        fileContents.insert(lineNumber, exitingLogMessage.getLoggingStatement(methodDefinition.indentationLevel))
         lineOffset.incrementLineOffset()
     else:
         for returnStatement in methodDefinition.returnStatements:
             returnValue = returnStatement.value
     
-            exitingLogMessage = ExitingLogMessage('tracer', className, operationName, returnValue)
+            exitingLogMessage = ExitingLogMessage(settings.JAVA_LOGGER_VARIABLE_NAME, className, operationName, returnValue)
             lineNumber = returnStatement.lineNumber + (lineOffset.value - 1)
-            fileContents.insert(lineNumber, exitingLogMessage.getLoggingStatement())
+            fileContents.insert(lineNumber, exitingLogMessage.getLoggingStatement(returnStatement.indentationLevel))
             lineOffset.incrementLineOffset()
     
 def _writeJavaLoggerDeclarationToClassDefinition(fileContents, definition, lineOffset):
-    javaLoggerDeclaration = LoggerVariableDeclaration(settings.LOGGER_VARIABLE_NAME)
+    javaLoggerDeclaration = LoggerVariableDeclaration()
 
     fileContents.insert(definition.lineNumber, javaLoggerDeclaration.getLoggerDeclaration())
     lineOffset.incrementLineOffset()

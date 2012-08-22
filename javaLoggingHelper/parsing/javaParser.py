@@ -1,5 +1,4 @@
 import logging, settings, re
-from compiler.ast import Assert
 
 _logger = logging.getLogger(settings.LOGGER_NAME) 
 
@@ -13,24 +12,25 @@ class JavaParsingResult(object):
         return 'JavaParsingResult(classDefinition = {0}, constructorDefinitions = {1}, methodDefinitions = {2})'.format(self.classDefinition, self.constructorDefinitions, self.constructorDefinitions)
     
 class Definition(object):
-    def __init__(self, name, lineNumber):
+    def __init__(self, name, lineNumber, indentationLevel):
         self.lineNumber = lineNumber
         self.endLineNumber = None
         self.name = name
+        self.indentationLevel = indentationLevel
         
     def __repr__(self):
         return 'Definition(name = {0}, lineNumber = {1}, endLineNumber = {2})'.format(self.name, self.lineNumber, self.endLineNumber)
     
 class ClassDefinition(Definition):
-    def __init__(self, name, lineNumber):
-        super(ClassDefinition, self).__init__(name, lineNumber)
+    def __init__(self, name, lineNumber, indentationLevel):
+        super(ClassDefinition, self).__init__(name, lineNumber, indentationLevel)
         
     def __repr__(self):
         return 'ClassDefinition(name = {0}, lineNumber = {1}, endLineNumber = {2})'.format(self.name, self.lineNumber, self.endLineNumber)
         
 class MethodDefinition(Definition):
-    def __init__(self, returnValue, name, parameters, lineNumber):
-        super(MethodDefinition, self).__init__(name, lineNumber)
+    def __init__(self, returnValue, name, parameters, lineNumber, indentationLevel):
+        super(MethodDefinition, self).__init__(name, lineNumber, indentationLevel)
         self.returnStatements = []
         self.returnValue = returnValue
         self.parameters = parameters
@@ -39,8 +39,8 @@ class MethodDefinition(Definition):
         return 'MethodDefinition(returnValue = {0}, name = {1}, parameters = {2}, returnStatements = {3}, lineNumber = {4}, endLineNumber = {5})'.format(self.returnValue, self.name, self.parameters, self.returnStatements, self.lineNumber, self.endLineNumber) 
 
 class ConstructorDefinition(Definition):
-    def __init__(self,  name, parameters, lineNumber):
-        super(ConstructorDefinition, self).__init__(name, lineNumber)
+    def __init__(self,  name, parameters, lineNumber, indentationLevel):
+        super(ConstructorDefinition, self).__init__(name, lineNumber, indentationLevel)
         self.parameters = parameters
         
     def __repr__(self):
@@ -55,9 +55,10 @@ class Parameter(object):
         return 'Parameter(type_ = {0}, value = {1})'.format(self.type_, self.value) 
     
 class ReturnStatement(object):
-    def __init__(self, value, lineNumber):
+    def __init__(self, value, lineNumber, indentationLevel):
         self.value = value
         self.lineNumber = lineNumber
+        self.indentationLevel = indentationLevel
         
     def __repr__(self):
         return 'ReturnStatement(value = {0}, lineNumber = {1})'.format(self.value, self.lineNumber) 
@@ -66,7 +67,7 @@ class FileLine(object):
     def __init__(self, text, lineNumber):
         self.text = text
         self.lineNumber = lineNumber
-        self.indentation = 0
+        self.indentationLevel = 0
         
     def __repr__(self):
         text = self.text.strip('\n')
@@ -85,8 +86,8 @@ class File(object):
             fileLine = FileLine(textFileLines[index], lineNumber)
             
             originalLength = len(textFileLines[index])
-            indentation = originalLength - len(textFileLines[index].lstrip())
-            fileLine.indentation = indentation
+            indentationLevel = originalLength - len(textFileLines[index].lstrip())
+            fileLine.indentationLevel = indentationLevel
             
             self.fileLines.append(fileLine)
             
@@ -152,7 +153,7 @@ def _searchForClassDefinition(fileToParse):
     output = None
     if match:
         className = match.groups()[1]
-        classDefinition = ClassDefinition(className, fileLine.lineNumber)
+        classDefinition = ClassDefinition(className, fileLine.lineNumber, fileLine.indentationLevel + 1)
         _findEndOfDefinition(fileToParse, classDefinition)
         
         output = classDefinition
@@ -180,7 +181,7 @@ def _searchForOperationDefinition(fileToParse):
         parameters = _findParameters(matchGroup[2])
         lineNumber = fileLine.lineNumber
         
-        constructorDefinition = ConstructorDefinition(name, parameters, lineNumber)
+        constructorDefinition = ConstructorDefinition(name, parameters, lineNumber, fileLine.indentationLevel + 1)
         _findEndOfDefinition(fileToParse, constructorDefinition)
         
         output = constructorDefinition
@@ -190,7 +191,7 @@ def _searchForOperationDefinition(fileToParse):
         parameters = _findParameters(matchGroup[2])
         lineNumber = fileLine.lineNumber
         
-        methodDefinition = MethodDefinition(returnValue, name, parameters, lineNumber)
+        methodDefinition = MethodDefinition(returnValue, name, parameters, lineNumber, fileLine.indentationLevel + 1)
         _findEndOfDefinition(fileToParse, methodDefinition)
         
         output = methodDefinition
@@ -246,7 +247,7 @@ def _searchForReturnStatement(fileLine):
     matchGroup = match.groups()
     value = matchGroup[1].strip()
     
-    return ReturnStatement(value, fileLine.lineNumber)
+    return ReturnStatement(value, fileLine.lineNumber, fileLine.indentationLevel)
             
 def _isMethodDefinition(matchGroup):
     _logger.info('Entering _isMethodDefinition {0}'.format(matchGroup))
