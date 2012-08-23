@@ -8,6 +8,9 @@ TEST_DATA_FILENAME = 'Test.java'
 
 LOG_FILE_DIR = './app.log'
 
+LOGGING_FILE_HANDLER = False
+LOGGING_CONSOLE_HANDLER = False
+
 LOGGER_NAME = 'JavaLoggingHelper'
 
 JAVA_LOGGER_VARIABLE_NAME = 'tracer'

@@ -29,6 +29,12 @@ def configureLogging():
     
     # add handlers to root _logger
     _logger = logging.getLogger(settings.LOGGER_NAME)
-    _logger.addHandler(fileHandler)
-    _logger.addHandler(consoleHandler)
+    if settings.LOGGING_FILE_HANDLER:
+        _logger.addHandler(fileHandler)
+    if settings.LOGGING_CONSOLE_HANDLER:
+        _logger.addHandler(consoleHandler)
+    
+    if not settings.LOGGING_FILE_HANDLER and not settings.LOGGING_CONSOLE_HANDLER:
+        dummyHandler = logging.NullHandler()
+        _logger.addHandler(dummyHandler)
         
