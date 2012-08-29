@@ -9,7 +9,7 @@ class JavaParsingResult(object):
         self.methodDefinitions = methodDefinitions
 
     def __repr__(self):
-        return 'JavaParsingResult(classDefinition = {0}, constructorDefinitions = {1}, methodDefinitions = {2})'.format(self.classDefinition, self.constructorDefinitions, self.constructorDefinitions)
+        return 'JavaParsingResult(classDefinition = %s, constructorDefinitions = %s, methodDefinitions = %s)' % self.classDefinition, self.constructorDefinitions, self.constructorDefinitions
     
 class Definition(object):
     def __init__(self, name, lineNumber, indentationLevel):
@@ -19,7 +19,7 @@ class Definition(object):
         self.indentationLevel = indentationLevel
         
     def __repr__(self):
-        return 'Definition(name = {0}, lineNumber = {1}, endLineNumber = {2})'.format(self.name, self.lineNumber, self.endLineNumber)
+        return 'Definition(name = %s, lineNumber = %s, endLineNumber = %s)' % self.name, self.lineNumber, self.endLineNumber
     
 class ClassDefinition(Definition):
     def __init__(self, name, lineNumber, indentationLevel):
@@ -36,7 +36,7 @@ class MethodDefinition(Definition):
         self.parameters = parameters
         
     def __repr__(self):
-        return 'MethodDefinition(returnValue = {0}, name = {1}, parameters = {2}, returnStatements = {3}, lineNumber = {4}, endLineNumber = {5})'.format(self.returnValue, self.name, self.parameters, self.returnStatements, self.lineNumber, self.endLineNumber) 
+        return 'MethodDefinition(returnValue = %s, name = %s, parameters = %s, returnStatements = %s, lineNumber = , endLineNumber = %s)' % self.returnValue, self.name, self.parameters, self.returnStatements, self.lineNumber, self.endLineNumber 
 
 class ConstructorDefinition(Definition):
     def __init__(self,  name, parameters, lineNumber, indentationLevel):
@@ -44,7 +44,7 @@ class ConstructorDefinition(Definition):
         self.parameters = parameters
         
     def __repr__(self):
-        return 'ConstructorDefinition(name = {0}, parameters = {1}, lineNumber = {2}, endLineNumber = {3})'.format(self.name, self.parameters, self.lineNumber, self.endLineNumber) 
+        return 'ConstructorDefinition(name = %s, parameters = %s, lineNumber = %s, endLineNumber = %s)' % self.name, self.parameters, self.lineNumber, self.endLineNumber
     
 class Parameter(object):
     def __init__(self, type_, value):
@@ -52,7 +52,7 @@ class Parameter(object):
         self.value = value
         
     def __repr__(self):
-        return 'Parameter(type_ = {0}, value = {1})'.format(self.type_, self.value) 
+        return 'Parameter(type_ = %s, value = %s)' % self.type_, self.value
     
 class ReturnStatement(object):
     def __init__(self, value, lineNumber, indentationLevel):
@@ -61,7 +61,7 @@ class ReturnStatement(object):
         self.indentationLevel = indentationLevel
         
     def __repr__(self):
-        return 'ReturnStatement(value = {0}, lineNumber = {1})'.format(self.value, self.lineNumber) 
+        return 'ReturnStatement(value = %s, lineNumber = %s)' % self.value, self.lineNumber
 
 class FileLine(object):
     def __init__(self, text, lineNumber):
@@ -71,7 +71,7 @@ class FileLine(object):
         
     def __repr__(self):
         text = self.text.strip('\n')
-        return 'FileLine(text = {0}, lineNumber = {1})'.format(text, self.lineNumber)          
+        return 'FileLine(text = %s, lineNumber = %s)'% text, self.lineNumber
 
 class File(object):
     def __init__(self, file_):
@@ -109,7 +109,7 @@ class File(object):
 _visibilities = ('public', 'protected', 'private')
 
 def parseFile(file_):
-    _logger.info('Entering findDefinitions {0}'.format(repr(file_)))
+    _logger.info('Entering findDefinitions %s' % repr(file_))
     
     fileToParse = File(file_)
     
@@ -121,14 +121,14 @@ def parseFile(file_):
         result = _searchForClassDefinition(fileToParse)
         
         if result:
-            _logger.info('Class definition found {0}'.format(result))
+            _logger.info('Class definition found %s' % result)
             
             classDefinition = result
         else:
             result = _searchForOperationDefinition(fileToParse)
             
             if result:
-                _logger.info('Operation definition found {0}'.format(result))
+                _logger.info('Operation definition found %s' % result)
                 
                 if isinstance(result, ConstructorDefinition):
                     constructorDefinitions.append(result)
@@ -139,12 +139,12 @@ def parseFile(file_):
         
     javaParsingResult = JavaParsingResult(classDefinition, constructorDefinitions, methodDefinitions)
     
-    _logger.info('Exiting findDefinitions {0}'.format(javaParsingResult))
+    _logger.info('Exiting findDefinition %s' % javaParsingResult)
     
     return javaParsingResult
 
 def _searchForClassDefinition(fileToParse):
-    _logger.info('Entering _searchForClassDefinition {0}'.format(fileToParse))
+    _logger.info('Entering _searchForClassDefinition %s' % fileToParse)
     
     fileLine = fileToParse.getCurrentFileLine()
     
@@ -158,19 +158,19 @@ def _searchForClassDefinition(fileToParse):
         
         output = classDefinition
         
-    _logger.info('Exiting _searchForClassDefinition {0}'.format(output))
+    _logger.info('Exiting _searchForClassDefinition %s' % output)
     
     return output
 
 def _searchForOperationDefinition(fileToParse):
-    _logger.info('Entering _searchForOperationDefinition {0}'.format(fileToParse))
+    _logger.info('Entering _searchForOperationDefinition %s' % fileToParse)
     
     fileLine = fileToParse.getCurrentFileLine()
     match = re.search(r'(\w*\<\w*\S\s*\w+\>|\w+)\s+(\w+)\((.*)\) ', fileLine.text)
     output = None
     
     if not match:
-        _logger.info('Exiting _searchForOperationDefinition {0}'.format(output))
+        _logger.info('Exiting _searchForOperationDefinition %s' % output)
         
         return output
         
@@ -196,12 +196,12 @@ def _searchForOperationDefinition(fileToParse):
         
         output = methodDefinition
     
-    _logger.info('Exiting _searchForOperationDefinition {0}'.format(output))
+    _logger.info('Exiting _searchForOperationDefinition %s' % output)
     
     return output
     
 def _findEndOfDefinition(fileToParse, definition):
-    _logger.info('Entering _findEndOfOperation {0} {1}'.format(fileToParse, definition))
+    _logger.info('Entering _findEndOfOperation %s %s' % fileToParse, definition)
     
     startingLineNumber = fileToParse.getCurrentFileLine().lineNumber
     
@@ -231,7 +231,7 @@ def _findEndOfDefinition(fileToParse, definition):
     if isinstance(definition, ClassDefinition):
         fileToParse.setCurrentFileLineLocation(startingLineNumber)
     
-    _logger.info('Exiting _findEndOfOperation {0}'.format(definition))
+    _logger.info('Exiting _findEndOfOperation %s' % definition)
         
 def _searchForReturnStatement(fileLine):
     returnStatement = 'return'
@@ -250,36 +250,36 @@ def _searchForReturnStatement(fileLine):
     return ReturnStatement(value, fileLine.lineNumber, fileLine.indentationLevel)
             
 def _isMethodDefinition(matchGroup):
-    _logger.info('Entering _isMethodDefinition {0}'.format(matchGroup))
+    _logger.info('Entering _isMethodDefinition %s' % matchGroup)
     
     output = False
 
     if matchGroup[0] not in _visibilities:
         output = True
         
-    _logger.info('Exiting _isMethodDefinition {0}'.format(output))
+    _logger.info('Exiting _isMethodDefinition %s' % output)
 
     return output
 
 def _isConstructorDefinition(matchGroup):
-    _logger.info('Entering _isContructorDefinition {0}'.format(matchGroup))
+    _logger.info('Entering _isContructorDefinition %s' % matchGroup)
 
     output = False
     
     if matchGroup[0] in _visibilities:
         output = True
     
-    _logger.info('Exiting _isContructorDefinition {0}'.format(output))
+    _logger.info('Exiting _isContructorDefinition %s'% output)
 
     return output
 
 def _findParameters(text):
-    _logger.info('Entering _findParameters {0}'.format(repr(text))) 
+    _logger.info('Entering _findParameters %s' % repr(text))
                  
     parameters = []
     
     if text is []:
-        _logger.info('Exiting _isContructorDefinition {0}'.format(repr(parameters)))
+        _logger.info('Exiting _isContructorDefinition %s' % repr(parameters))
         
         return parameters
     
@@ -294,6 +294,6 @@ def _findParameters(text):
             parameter.value = parametersText[index]
             parameters.append(parameter)
             
-    _logger.info('Exiting _findParameters {0}'.format(repr(parameters)))
+    _logger.info('Exiting _findParameters %s' % repr(parameters))
     
     return parameters

@@ -34,7 +34,7 @@ def configureLogging():
     if settings.LOGGING_CONSOLE_HANDLER:
         _logger.addHandler(consoleHandler)
     
-    if not settings.LOGGING_FILE_HANDLER and not settings.LOGGING_CONSOLE_HANDLER:
-        dummyHandler = logging.NullHandler
-        _logger.addHandler(dummyHandler)
+#    if not settings.LOGGING_FILE_HANDLER and not settings.LOGGING_CONSOLE_HANDLER:
+#        dummyHandler = logging.NullHandler
+#        _logger.addHandler(dummyHandler)
         

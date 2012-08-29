@@ -1,6 +1,5 @@
 import os, logging, settings
 import shutil
-import stat
 
 _logger = logging.getLogger(settings.LOGGER_NAME)
 
@@ -8,7 +7,7 @@ def makeBackup():
     backupADirectory(settings.DATA_DIR)
 
 def backupADirectory(directory):
-    _logger.info('Entering backupADirectory {0}'.format(directory))
+    _logger.info('Entering backupADirectory %s' % directory)
 
     if not os.path.exists(directory):
         _logger.critical("Directory not found.")
