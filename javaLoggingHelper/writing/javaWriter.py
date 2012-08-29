@@ -13,7 +13,7 @@ class LogMessage(object):
         self.loggerVariableName = loggerVariableName
         
     def __repr__(self):
-        return 'LogMessage(loggerVariableName = {0})'.format(self.loggerVariableName)
+        return 'LogMessage(loggerVariableName = %s)' % self.loggerVariableName
 
 class LoggerVariableDeclaration(LogMessage):
     def __init__(self):
@@ -22,7 +22,7 @@ class LoggerVariableDeclaration(LogMessage):
         self.javaLoggerName = settings.JAVA_LOGGER_NAME
         
     def getLoggerDeclaration(self):
-        return '{0}private static {1} {2} = {3}.getLogger({4});\n'.format(settings.INDENT, self.javaLoggerClass, self.loggerVariableName, self.javaLoggerClass, self.javaLoggerName)
+        return '%sprivate static %s %s = %s.getLogger(%s);\n' % settings.INDENT, self.javaLoggerClass, self.loggerVariableName, self.javaLoggerClass, self.javaLoggerName
 
 class EnteringLogMessage(LogMessage):
     def __init__(self, loggerVariableName, className, methodName, parameters):
@@ -40,12 +40,12 @@ class EnteringLogMessage(LogMessage):
                 formatedParameters = formatedParameters + param + ', '
             formatedParameters = formatedParameters[:len(formatedParameters) - 2]
             
-            return "{0}{1}.{2}({3}.class.getSimpleName(), \"{4}\", new Object[]{{{5}}});\n\n".format(indentation, self.loggerVariableName, self.methodCallName, self.className, self.methodName, formatedParameters)
+            return "%s%s.%s(%s.class.getSimpleName(), \"%s\", new Object[]{%s});\n\n" % indentation, self.loggerVariableName, self.methodCallName, self.className, self.methodName, formatedParameters
         else:
-            return '{0}{1}.{2}({3}.class.getSimpleName(), "{4}");\n\n'.format(indentation, self.loggerVariableName, self.methodCallName, self.className, self.methodName)
+            return '%s%s.%s(%s.class.getSimpleName(), "%s");\n\n' % indentation, self.loggerVariableName, self.methodCallName, self.className, self.methodName
             
     def __repr__(self):
-        return 'EnteringLogMessage(loggerVariableName = {0}, className = {1}, methodName = {2}, parameters = {3})'.format(self.loggerVariableName, self.className, self.methodName, self.parameters)
+        return 'EnteringLogMessage(loggerVariableName = %s, className = %s, methodName = %s, parameters = %s)' % self.loggerVariableName, self.className, self.methodName, self.parameters
     
 class ExitingLogMessage(LogMessage):
     def __init__(self, loggerVariableName, className, operationName, parameter):
@@ -59,12 +59,12 @@ class ExitingLogMessage(LogMessage):
         indentation = indentationLevel * settings.INDENT
         
         if len(self.parameter) > 0:
-            return '\n{0}{1}.{2}({3}.class.getSimpleName(), "{4}", {5});\n'.format(indentation, self.loggerVariableName, self.methodCallName, self.className, self.operationName, self.parameter)
+            return '\n%s%s.%s(%s.class.getSimpleName(), "%s", %s);\n' % indentation, self.loggerVariableName, self.methodCallName, self.className, self.operationName, self.parameter
         else:
-            return '\n{0}{1}.{2}({3}.class.getSimpleName(), "{4}");\n'.format(indentation, self.loggerVariableName, self.methodCallName, self.className, self.operationName)
+            return '\n%s%s.%s(%s.class.getSimpleName(), "%s");\n' % indentation, self.loggerVariableName, self.methodCallName, self.className, self.operationName
             
     def __repr__(self):
-        return 'ExitingLogMessage(loggerVariableName = {0}, className = {1}, operationName = {2}, parameter = {3})'.format(self.loggerVariableName, self.className, self.operationName, self.parameter)
+        return 'ExitingLogMessage(loggerVariableName = %s, className = %s, operationName = %s, parameter = %s)' % self.loggerVariableName, self.className, self.operationName, self.parameter
 
 class LineOffset(object):
     def __init__(self):
@@ -77,10 +77,10 @@ class LineOffset(object):
         self.value = (self.value - 1)
         
     def __repr__(self):
-        return 'LineOffset(value = {0})'.format(self.value)
+        return 'LineOffset(value = %s)' % self.value
         
 def writeLoggingMessages(fileToWriteTo, javaParsingResult):
-    _logger.info('Entering writeLoggingMessages {0}'.format(javaParsingResult))
+    _logger.info('Entering writeLoggingMessages %s' % javaParsingResult)
     
     lineOffset = LineOffset()
     
@@ -100,7 +100,7 @@ def writeLoggingMessages(fileToWriteTo, javaParsingResult):
     fileToWriteTo.seek(0)
     fileToWriteTo.writelines(fileContents)
     
-    _logger.info('Exiting writeLoggingMessages {0}'.format(javaParsingResult))
+    _logger.info('Exiting writeLoggingMessages %s' % javaParsingResult)
 
 def _writeLoggingMessageToConstructorDefinition(fileContents, className, constructorDefinition, lineOffset):
     operationName = constructorDefinition.name
@@ -138,7 +138,7 @@ def _writeLoggingMessageToMethodDefinition(fileContents, className, methodDefini
         for returnStatement in methodDefinition.returnStatements:
             indentation = settings.INDENT * returnStatement.indentationLevel
             
-            returnVariableDeclaration = '{0}{1} {2} = {3};\n'.format(indentation, methodDefinition.returnValue, settings.JAVA_OUTPUT_VARIABLE_NAME, returnStatement.value)
+            returnVariableDeclaration = '%s%s %s = %s;\n' % indentation, methodDefinition.returnValue, settings.JAVA_OUTPUT_VARIABLE_NAME, returnStatement.value
             lineNumberForReturnVariableDeclaration = returnStatement.lineNumber + (lineOffset.value - 1)
             fileContents.insert(lineNumberForReturnVariableDeclaration, returnVariableDeclaration)
             lineOffset.incrementLineOffset()
@@ -148,7 +148,7 @@ def _writeLoggingMessageToMethodDefinition(fileContents, className, methodDefini
             fileContents.insert(lineNumber, exitingLogMessage.getLoggingStatement(returnStatement.indentationLevel))
             lineOffset.incrementLineOffset()
             
-            returnMsg = '{0}return {1};\n'.format(indentation, settings.JAVA_OUTPUT_VARIABLE_NAME)
+            returnMsg = '%sreturn %s;\n' % indentation, settings.JAVA_OUTPUT_VARIABLE_NAME
             lineNumber = returnStatement.lineNumber + lineOffset.value - 1
             
             del fileContents[lineNumber]
