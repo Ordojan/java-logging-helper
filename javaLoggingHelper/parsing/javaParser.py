@@ -9,7 +9,7 @@ class JavaParsingResult(object):
         self.methodDefinitions = methodDefinitions
 
     def __repr__(self):
-        return 'JavaParsingResult(classDefinition = %s, constructorDefinitions = %s, methodDefinitions = %s)' % self.classDefinition, self.constructorDefinitions, self.constructorDefinitions
+        return 'JavaParsingResult(classDefinition = %s, constructorDefinitions = %s, methodDefinitions = %s)' % (self.classDefinition, self.constructorDefinitions, self.constructorDefinitions)
     
 class Definition(object):
     def __init__(self, name, lineNumber, indentationLevel):
@@ -19,14 +19,14 @@ class Definition(object):
         self.indentationLevel = indentationLevel
         
     def __repr__(self):
-        return 'Definition(name = %s, lineNumber = %s, endLineNumber = %s)' % self.name, self.lineNumber, self.endLineNumber
+        return 'Definition(name = %s, lineNumber = %s, endLineNumber = %s)' % (self.name, self.lineNumber, self.endLineNumber)
     
 class ClassDefinition(Definition):
     def __init__(self, name, lineNumber, indentationLevel):
         super(ClassDefinition, self).__init__(name, lineNumber, indentationLevel)
         
     def __repr__(self):
-        return 'ClassDefinition(name = {0}, lineNumber = {1}, endLineNumber = {2})'.format(self.name, self.lineNumber, self.endLineNumber)
+        return 'ClassDefinition(name = %s, lineNumber = %s, endLineNumber = %s)' % (self.name, self.lineNumber, self.endLineNumber)
         
 class MethodDefinition(Definition):
     def __init__(self, returnValue, name, parameters, lineNumber, indentationLevel):
@@ -36,7 +36,7 @@ class MethodDefinition(Definition):
         self.parameters = parameters
         
     def __repr__(self):
-        return 'MethodDefinition(returnValue = %s, name = %s, parameters = %s, returnStatements = %s, lineNumber = , endLineNumber = %s)' % self.returnValue, self.name, self.parameters, self.returnStatements, self.lineNumber, self.endLineNumber 
+        return 'MethodDefinition(returnValue = %s, name = %s, parameters = %s, returnStatements = %s, lineNumber = %s, endLineNumber = %s)' % (repr(self.returnValue), self.name, repr(self.parameters), repr(self.returnStatements), self.lineNumber, self.endLineNumber) 
 
 class ConstructorDefinition(Definition):
     def __init__(self,  name, parameters, lineNumber, indentationLevel):
@@ -44,7 +44,7 @@ class ConstructorDefinition(Definition):
         self.parameters = parameters
         
     def __repr__(self):
-        return 'ConstructorDefinition(name = %s, parameters = %s, lineNumber = %s, endLineNumber = %s)' % self.name, self.parameters, self.lineNumber, self.endLineNumber
+        return 'ConstructorDefinition(name = %s, parameters = %s, lineNumber = %s, endLineNumber = %s)' % (self.name, self.parameters, self.lineNumber, self.endLineNumber)
     
 class Parameter(object):
     def __init__(self, type_, value):
@@ -52,7 +52,7 @@ class Parameter(object):
         self.value = value
         
     def __repr__(self):
-        return 'Parameter(type_ = %s, value = %s)' % self.type_, self.value
+        return 'Parameter(type_ = %s, value = %s)' % (self.type_, self.value)
     
 class ReturnStatement(object):
     def __init__(self, value, lineNumber, indentationLevel):
@@ -61,7 +61,7 @@ class ReturnStatement(object):
         self.indentationLevel = indentationLevel
         
     def __repr__(self):
-        return 'ReturnStatement(value = %s, lineNumber = %s)' % self.value, self.lineNumber
+        return 'ReturnStatement(value = %s, lineNumber = %s)' % (self.value, self.lineNumber)
 
 class FileLine(object):
     def __init__(self, text, lineNumber):
@@ -71,7 +71,7 @@ class FileLine(object):
         
     def __repr__(self):
         text = self.text.strip('\n')
-        return 'FileLine(text = %s, lineNumber = %s)'% text, self.lineNumber
+        return 'FileLine(text = %s, lineNumber = %s)'% (text, self.lineNumber)
 
 class File(object):
     def __init__(self, file_):
@@ -104,7 +104,7 @@ class File(object):
         self.lineIndex = self.lineIndex + 1
         
     def __repr__(self):
-        return 'File(file_ = {0})'.format(self.fileName)       
+        return 'File(file_ = %s)' % self.fileName       
 
 _visibilities = ('public', 'protected', 'private')
 
@@ -201,7 +201,7 @@ def _searchForOperationDefinition(fileToParse):
     return output
     
 def _findEndOfDefinition(fileToParse, definition):
-    _logger.info('Entering _findEndOfOperation %s %s' % fileToParse, definition)
+    _logger.info('Entering _findEndOfOperation %s %s' % (fileToParse, definition))
     
     startingLineNumber = fileToParse.getCurrentFileLine().lineNumber
     
@@ -250,7 +250,7 @@ def _searchForReturnStatement(fileLine):
     return ReturnStatement(value, fileLine.lineNumber, fileLine.indentationLevel)
             
 def _isMethodDefinition(matchGroup):
-    _logger.info('Entering _isMethodDefinition %s' % matchGroup)
+    _logger.info('Entering _isMethodDefinition %s' % repr(matchGroup))
     
     output = False
 
@@ -262,7 +262,7 @@ def _isMethodDefinition(matchGroup):
     return output
 
 def _isConstructorDefinition(matchGroup):
-    _logger.info('Entering _isContructorDefinition %s' % matchGroup)
+    _logger.info('Entering _isContructorDefinition %s' % repr(matchGroup))
 
     output = False
     
