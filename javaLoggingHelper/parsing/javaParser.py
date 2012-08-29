@@ -109,7 +109,7 @@ class File(object):
 _visibilities = ('public', 'protected', 'private')
 
 def parseFile(file_):
-    _logger.info('Entering findDefinitions {0}'.format(repr(file_)))
+    _logger.info('Entering findDefinitions %s' % repr(file_))
     
     fileToParse = File(file_)
     

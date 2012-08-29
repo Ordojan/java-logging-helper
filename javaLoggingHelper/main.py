@@ -4,6 +4,8 @@ import javaLoggingHelper.backupService as backupService
 from javaLoggingHelper.parsing import javaParser
 from javaLoggingHelper.writing import javaWriter
 import os
+import sys
+
 _logger = logging.getLogger(settings.LOGGER_NAME)
 
 def main():
@@ -30,8 +32,7 @@ def applicationStart():
     
     backupService.recoverDataFromBackup()
     backupService.backupADirectory(settings.DATA_DIR)
-        
+    
 def applicationEnd():
-        
     _logger.info('Application ended.')
     

@@ -5,6 +5,6 @@ from datetime import datetime
 import javaLoggingHelper.main
 
 if __name__ == '__main__':
-    print 'Started at {0}'.format(str(datetime.now()))
+    print 'Started at %s' % str(datetime.now())
     javaLoggingHelper.main.main()
-    print 'Ended at {0}'.format(str(datetime.now()))
+    print 'Ended at %s' % str(datetime.now())
