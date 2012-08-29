@@ -57,3 +57,7 @@ local.properties
 
 # PDT-specific
 .buildpath
+
+
+testData
+testData_backup
