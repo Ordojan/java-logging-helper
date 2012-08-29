@@ -4,7 +4,6 @@ import javaLoggingHelper.backupService as backupService
 from javaLoggingHelper.parsing import javaParser
 from javaLoggingHelper.writing import javaWriter
 import os
-import sys
 
 _logger = logging.getLogger(settings.LOGGER_NAME)
 

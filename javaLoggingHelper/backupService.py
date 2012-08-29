@@ -8,7 +8,7 @@ def makeBackup():
     backupADirectory(settings.DATA_DIR)
 
 def backupADirectory(directory):
-    _logger.info('Entering backupADirectory %s' % directory)
+    _logger.info('Entering backupADirectory {0}'.format(directory))
 
     if not os.path.exists(directory):
         _logger.critical("Directory not found.")
@@ -54,12 +54,3 @@ def recoverDataFromBackup():
         raise IOError('Data could not be recovered not be created.')
     
     _logger.info('Exiting recoverFromBackup')
-    
-def copystat(src, dst):
-    """Copy all stat info (mode bits, atime and mtime) from src to dst"""
-    st = os.stat(src)
-    mode = stat.S_IMODE(st.st_mode)
-#    if hasattr(os, 'utime'):
-#        os.utime(dst, (st.st_atime, st.st_mtime))
-    if hasattr(os, 'chmod'):
-        os.chmod(dst, mode)
