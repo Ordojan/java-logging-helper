@@ -2,9 +2,8 @@ import os
 
 PROJECT_ROOT_DIR = os.path.dirname(__file__)
 
-DATA_DIR = PROJECT_ROOT_DIR + '/testData'
+DATA_DIR = '' #PROJECT_ROOT_DIR + '/testData'
 TEST_DATA_BACKUP_DIR = DATA_DIR + '/backups'
-TEST_DATA_FILENAME = 'Test.java'
 
 LOG_FILE_DIR = './app.log'
 

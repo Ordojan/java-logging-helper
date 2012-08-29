@@ -1,6 +1,7 @@
 import os, sys
 from datetime import datetime
-#sys.path.append(os.path.abspath(os.path.join(os.getcwd(), os.path.pardir)))
+
+#sys.path.append(os.path.abspath(os.getcwd()))
 
 import javaLoggingHelper.main
 
